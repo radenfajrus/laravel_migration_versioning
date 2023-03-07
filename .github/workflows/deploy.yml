@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Block non prod branch
-        if: endsWith(github.event.base_ref, '${{ env.name }}') == false
+        if: endsWith(github.event.base_ref, 'prod') == false
         run: exit -1
-        
+
       - name: Deploy Using ssh
         uses: appleboy/ssh-action@master
         with:
