@@ -14,6 +14,7 @@ isHigher(){
 
 for d in `ls -d database/migrations/*/ | sed -e 's/database\/migrations//g' | sed -e 's/\///g' | sort -rV`; do
   if (isHigher $d $DEPLOYMENT_VERSION); then
+    echo "php artisan migrate:rollback --force --path=database/migrations/$d"
      php artisan migrate:rollback --force --path=database/migrations/$d
   fi
 done
