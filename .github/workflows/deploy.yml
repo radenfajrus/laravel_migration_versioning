@@ -8,7 +8,7 @@ on:
   push:
     branches: [ prod ]
     tags:
-      - *
+      - '**'
 
 jobs:
   deploy:
