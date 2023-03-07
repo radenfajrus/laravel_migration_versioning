@@ -52,6 +52,7 @@ jobs:
             git checkout $DEPLOYMENT_COMMIT
             DEPLOYMENT_VERSION=$(git describe --tags --abbrev=0 | echo 0)
             cd ..
+            echo $DEPLOYMENT_COMMIT
 
             # Check Running Version
             cd ${{ env.name }}
