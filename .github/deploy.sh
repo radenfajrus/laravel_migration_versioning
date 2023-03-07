@@ -4,7 +4,6 @@ DEPLOYMENT_COMMIT=`[ -z $1 ] && echo 'prod' || echo $1`
 
 set -e
 echo "Deployment started ..."
-(php artisan down) || true
 
 git stash
 git fetch --all
@@ -18,6 +17,8 @@ git pull
 #./composer.phar install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+(php artisan down) || true
 
 php artisan clear-compiled
 php artisan optimize:clear
