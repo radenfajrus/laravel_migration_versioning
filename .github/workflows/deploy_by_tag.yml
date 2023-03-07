@@ -1,5 +1,5 @@
 
-name: laravel_migration_versioning
+name: deploy_by_tag
 env:
   name: laravel_migration_versioning
   branch: prod

@@ -1,5 +1,5 @@
 
-name: laravel_migration_versioning
+name: deploy_by_branch
 env:
   name: laravel_migration_versioning
   branch: prod-release
@@ -71,6 +71,7 @@ jobs:
               echo "Upgrade Version Started"
               echo "Migrate from $RUNNING_VERSION to $DEPLOYMENT_VERSION"
               cd ${{ env.name }}
+              echo "${{ secrets.ENV_FILE }}" > .env
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
               sh .github/migrate_to_deployment_version.sh $DEPLOYMENT_VERSION
               cd ..
@@ -78,12 +79,14 @@ jobs:
               echo "Downgrade Version Started"
               echo "Test Deployment Before Rollback"
               cd ${{ env.name }}_bak
+              echo "${{ secrets.ENV_FILE }}" > .env
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
               cd ..
 
               echo "Rollback from $RUNNING_VERSION to $DEPLOYMENT_VERSION"
               cd ${{ env.name }}
               sh .github/rollback_from_current_version.sh $DEPLOYMENT_VERSION
+              echo "${{ secrets.ENV_FILE }}" > .env
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
               cd ..
             fi
