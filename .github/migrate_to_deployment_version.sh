@@ -15,6 +15,7 @@ isHigherEqual(){
 
 for d in `ls -d database/migrations/*/ | sed -e 's/database\/migrations//g' | sed -e 's/\///g' | sort -V`; do
   if (isHigherEqual $d $RUNNING_VERSION); then
+    echo "php artisan migrate --force --path=database/migrations/$d"
      php artisan migrate --force --path=database/migrations/$d
   fi
 done

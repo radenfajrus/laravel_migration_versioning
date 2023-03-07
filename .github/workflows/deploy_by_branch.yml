@@ -1,22 +1,18 @@
 
-name: laravel_migration_versioning
+name: deploy_by_branch
 env:
   name: laravel_migration_versioning
-  branch: prod
+  branch: prod-release
 
 on:
   push:
-    tags:
-      - '**'
+    branches:
+      - 'prod-release'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Block non prod branch
-        if: endsWith(github.event.base_ref, 'prod') == false
-        run: exit -1
-
       - name: Deploy Using ssh
         uses: appleboy/ssh-action@master
         with:
@@ -75,6 +71,7 @@ jobs:
               echo "Upgrade Version Started"
               echo "Migrate from $RUNNING_VERSION to $DEPLOYMENT_VERSION"
               cd ${{ env.name }}
+              echo "${{ secrets.ENV_FILE }}" > .env
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
               sh .github/migrate_to_deployment_version.sh $DEPLOYMENT_VERSION
               cd ..
@@ -82,12 +79,14 @@ jobs:
               echo "Downgrade Version Started"
               echo "Test Deployment Before Rollback"
               cd ${{ env.name }}_bak
+              echo "${{ secrets.ENV_FILE }}" > .env
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
               cd ..
 
               echo "Rollback from $RUNNING_VERSION to $DEPLOYMENT_VERSION"
               cd ${{ env.name }}
               sh .github/rollback_from_current_version.sh $DEPLOYMENT_VERSION
+              echo "${{ secrets.ENV_FILE }}" > .env
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
               cd ..
             fi
