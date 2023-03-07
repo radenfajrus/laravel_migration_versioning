@@ -7,6 +7,8 @@ env:
 on:
   push:
     branches: [ prod ]
+    tags:
+      - *
 
 jobs:
   deploy:
@@ -25,19 +27,19 @@ jobs:
             # Clone if Directory not Exist
             [ -d ${{ env.name }} ] || ( \
               git clone git@github.com:radenfajrus/${{ env.name }}.git \ 
-              && git stash \ 
-              && git checkout ${{ env.branch }} \ 
-              && git pull \ 
-              && cd .. \ 
+              git stash \ 
+              git checkout ${{ env.branch }} \ 
+              git pull \ 
+              cd .. \ 
             )
             # Clone Directory backup
             [ -d ${{ env.name }}_bak ] || ( \
               git clone git@github.com:radenfajrus/${{ env.name }}.git ${{ env.name }}_bak \ 
-              && git stash \ 
-              && git fetch --all \
-              && git checkout ${{ env.branch }} \ 
-              && git pull \ 
-              && cd .. \ 
+              git stash \ 
+              git fetch --all \
+              git checkout ${{ env.branch }} \ 
+              git pull \ 
+              cd .. \ 
             )
 
             # Check Deployment Version
