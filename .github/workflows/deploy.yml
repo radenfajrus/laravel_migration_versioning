@@ -1,7 +1,7 @@
 
-name: web_clone_exercise
+name: laravel_migration_versioning
 env:
-  name: web_clone_exercise
+  name: laravel_migration_versioning
   branch: prod
 
 on:
@@ -25,23 +25,23 @@ jobs:
             ssh-keygen -F github.com || ssh-keyscan github.com >>~/.ssh/known_hosts
 
             # Clone if Directory not Exist
-            [ -d ${{ env.name }} ] || ( \
-              git clone git@github.com:radenfajrus/${{ env.name }}.git \ 
-              cd ${{ env.name }} \
-              git stash \ 
-              git checkout ${{ env.branch }} \ 
-              git pull \ 
-              cd .. \ 
+            [ -d ${{ env.name }} ] || ( 
+              git clone git@github.com:radenfajrus/${{ env.name }}.git 
+              cd ${{ env.name }} 
+              git stash 
+              git checkout ${{ env.branch }} 
+              git pull 
+              cd .. 
             )
             # Clone Directory backup
-            [ -d ${{ env.name }}_bak ] || ( \
-              git clone git@github.com:radenfajrus/${{ env.name }}.git ${{ env.name }}_bak \ 
-              cd ${{ env.name }}_bak \
-              git stash \ 
-              git fetch --all \
-              git checkout ${{ env.branch }} \ 
-              git pull \ 
-              cd .. \ 
+            [ -d ${{ env.name }}_bak ] || ( 
+              git clone git@github.com:radenfajrus/${{ env.name }}.git ${{ env.name }}_bak 
+              cd ${{ env.name }}_bak 
+              git stash 
+              git fetch --all 
+              git checkout ${{ env.branch }} 
+              git pull 
+              cd .. 
             )
 
             # Check Deployment Version
