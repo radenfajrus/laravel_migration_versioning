@@ -73,7 +73,7 @@ jobs:
               cd ${{ env.name }}
               echo "${{ secrets.ENV_FILE }}" > .env
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
-              sh .github/migrate_to_deployment_version.sh $DEPLOYMENT_VERSION
+              sh .github/migrate_from_current_version.sh $RUNNING_VERSION
               cd ..
             else 
               echo "Downgrade Version Started"
@@ -85,7 +85,7 @@ jobs:
 
               echo "Rollback from $RUNNING_VERSION to $DEPLOYMENT_VERSION"
               cd ${{ env.name }}
-              sh .github/rollback_from_current_version.sh $DEPLOYMENT_VERSION
+              sh .github/rollback_to_deployment_version.sh $DEPLOYMENT_VERSION
               echo "${{ secrets.ENV_FILE }}" > .env
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
               cd ..
