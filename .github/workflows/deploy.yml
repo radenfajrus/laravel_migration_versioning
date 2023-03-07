@@ -32,6 +32,7 @@ jobs:
               git clone git@github.com:radenfajrus/${{ env.name }}.git 
               cd ${{ env.name }} 
               git stash 
+              git fetch --all 
               git checkout ${{ env.branch }} 
               git pull 
               cd .. 
@@ -53,6 +54,7 @@ jobs:
             git stash 
             git fetch --all
             git checkout $DEPLOYMENT_COMMIT
+            git pull
             DEPLOYMENT_VERSION=$(git describe --tags --abbrev=0 || echo 0)
             cd ..
             echo $DEPLOYMENT_COMMIT
