@@ -14,9 +14,10 @@ git pull
 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 php artisan clear-compiled
-php artisan optimize
+php artisan optimize:clear
 
-npm run prod
+npm install --only=production
+npm run build
 
 php artisan up
 echo "Deployment finished!"
