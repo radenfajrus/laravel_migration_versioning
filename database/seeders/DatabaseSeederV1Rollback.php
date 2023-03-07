@@ -51,7 +51,7 @@ class DatabaseSeederV1Rollback extends Seeder
 
         $this->refreshSequence("role_user","id");
         foreach($role_users as $role_user) {
-          \App\Models\RoleUser::where("id",$role_user["id"])->delete();
+          \App\Models\RoleUser::where("user_id",$role_user["user_id"])->where("role_id",$role_user["role_id"])->delete();
         };
         $this->refreshSequence("role_user","id");
     }

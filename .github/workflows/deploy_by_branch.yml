@@ -73,7 +73,7 @@ jobs:
               cd ${{ env.name }}
               echo "${{ secrets.ENV_FILE }}" > .env
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
-              sh .github/migrate_from_current_version.sh $RUNNING_VERSION
+              sh .github/migrate_from_running_version.sh $RUNNING_VERSION
               cd ..
             else 
               echo "Downgrade Version Started"
