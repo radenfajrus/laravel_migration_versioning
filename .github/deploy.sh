@@ -23,7 +23,7 @@ composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 php artisan clear-compiled
 php artisan optimize:clear
 
-npm install --only=production
+npm install
 npm run build
 
 php artisan up
