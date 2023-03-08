@@ -23,52 +23,56 @@ jobs:
           script: |
             ssh-keygen -F github.com || ssh-keyscan github.com >>~/.ssh/known_hosts
 
-            # Clone if Directory not Exist
-            [ -d ${{ env.name }} ] || ( 
-              git clone git@github.com:radenfajrus/${{ env.name }}.git 
-              cd ${{ env.name }} 
-              git stash 
-              git fetch --all 
-              git pull origin ${{ env.branch }}
-              git checkout ${{ env.branch }} 
-              cd .. 
-            )
-            # Clone Directory backup
-            [ -d ${{ env.name }}_bak ] || ( 
-              git clone git@github.com:radenfajrus/${{ env.name }}.git ${{ env.name }}_bak 
-              cd ${{ env.name }}_bak 
-              git stash 
-              git fetch --all 
-              git pull origin ${{ env.branch }}
-              git checkout ${{ env.branch }} 
-              cd .. 
-            )
-
             DEPLOYMENT_COMMIT=${{ github.head_ref || github.ref_name }} 
-            echo "github.ref : $DEPLOYMENT_COMMIT"
+            echo "github.head_ref : $DEPLOYMENT_COMMIT"
             checkout(){
+              echo "CHECKOUT"
               git stash 
               git fetch --all
               git fetch --tags --force
-              git pull origin ${{ env.branch }}
-              git checkout $DEPLOYMENT_COMMIT
-              git pull origin HEAD
+              git config pull.rebase true
+              git checkout prod
+              git pull origin prod
+              git checkout prod-release
+              git pull origin prod-release
+              HEAD_COMMIT=$(git rev-parse --verify HEAD)
+              git checkout $HEAD_COMMIT
             }
             deploy(){
+              echo "DEPLOY"
               echo "${{ secrets.ENV_FILE }}" > .env
               checkout
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
             }
 
-            # Check Deployment Version
+            # Clone if Directory not Exist
+            [ -d ${{ env.name }} ] || ( 
+              echo("Clone Directory")
+              git clone git@github.com:radenfajrus/${{ env.name }}.git 
+              cd ${{ env.name }} 
+              checkout
+              cd .. 
+            )
+            # Clone Directory backup
+            [ -d ${{ env.name }}_bak ] || ( 
+              echo("Clone Directory backup")
+              git clone git@github.com:radenfajrus/${{ env.name }}.git ${{ env.name }}_bak 
+              cd ${{ env.name }}_bak 
+              checkout
+              cd .. 
+            )
+
+
+            echo("Check Deployment Version")
             cd ${{ env.name }}_bak
-            DEPLOYMENT_VERSION=$(git describe --tags --abbrev=0 $DEPLOYMENT_COMMIT || echo 0)
             checkout
+            DEPLOYMENT_COMMIT=$(git rev-parse --verify HEAD)
+            DEPLOYMENT_VERSION=$(git describe --tags --abbrev=0 $DEPLOYMENT_COMMIT || echo 0)
             cd ..
             echo "DEPLOYMENT_COMMIT: $DEPLOYMENT_COMMIT"
             echo "DEPLOYMENT_VERSION: $DEPLOYMENT_VERSION"
 
-            # Check Running Version
+            echo("Check Running Version")
             cd ${{ env.name }}
             RUNNING_COMMIT=$(git rev-parse --verify HEAD)
             RUNNING_VERSION=$(git describe --tags --abbrev=0 $RUNNING_COMMIT || echo 0)
