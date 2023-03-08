@@ -2,7 +2,7 @@
 name: deploy_by_branch
 env:
   name: laravel_migration_versioning
-  branch: prod-release
+  branch: prod
 
 on:
   push:
@@ -29,8 +29,9 @@ jobs:
               cd ${{ env.name }} 
               git stash 
               git fetch --all 
+              git checkout ${{ env.branch }} 
+              git pull origin ${{ env.branch }}
               git checkout ${{ github.ref }}
-              git pull 
               cd .. 
             )
             # Clone Directory backup
@@ -39,8 +40,9 @@ jobs:
               cd ${{ env.name }}_bak 
               git stash 
               git fetch --all 
+              git checkout ${{ env.branch }} 
+              git pull origin ${{ env.branch }}
               git checkout ${{ github.ref }}
-              git pull 
               cd .. 
             )
 
@@ -50,8 +52,9 @@ jobs:
             echo "github.ref : $DEPLOYMENT_COMMIT"
             git stash 
             git fetch --all
+            git checkout ${{ env.branch }} 
+            git pull origin ${{ env.branch }}
             git checkout $DEPLOYMENT_COMMIT
-            git pull
             DEPLOYMENT_VERSION=$(git describe --tags --abbrev=0 || echo 0)
             cd ..
             echo $DEPLOYMENT_COMMIT

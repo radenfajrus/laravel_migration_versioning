@@ -47,11 +47,11 @@ jobs:
             # Check Deployment Version
             cd ${{ env.name }}_bak
             DEPLOYMENT_COMMIT=${{ github.ref }}
-            echo "github.ref : $DEPLOYMENT_COMMIT"
             git stash 
             git fetch --all
+            git checkout ${{ env.branch }} 
+            git pull origin ${{ env.branch }}
             git checkout $DEPLOYMENT_COMMIT
-            git pull
             DEPLOYMENT_VERSION=$(git describe --tags --abbrev=0 || echo 0)
             cd ..
             echo $DEPLOYMENT_COMMIT
