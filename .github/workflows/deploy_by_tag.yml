@@ -29,8 +29,9 @@ jobs:
               cd ${{ env.name }} 
               git stash 
               git fetch --all 
+              git checkout ${{ env.branch }} 
+              git pull origin ${{ env.branch }}
               git checkout ${{ github.ref }}
-              git pull 
               cd .. 
             )
             # Clone Directory backup
@@ -39,8 +40,9 @@ jobs:
               cd ${{ env.name }}_bak 
               git stash 
               git fetch --all 
+              git checkout ${{ env.branch }} 
+              git pull origin ${{ env.branch }}
               git checkout ${{ github.ref }}
-              git pull 
               cd .. 
             )
 
