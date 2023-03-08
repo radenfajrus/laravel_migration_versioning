@@ -29,7 +29,7 @@ jobs:
               cd ${{ env.name }} 
               git stash 
               git fetch --all 
-              git checkout $GITHUB_SHA
+              git checkout ${{ github.event.pull_request.head.sha }}
               git pull 
               cd .. 
             )
@@ -39,14 +39,14 @@ jobs:
               cd ${{ env.name }}_bak 
               git stash 
               git fetch --all 
-              git checkout $GITHUB_SHA 
+              git checkout ${{ github.event.pull_request.head.sha }}
               git pull 
               cd .. 
             )
 
             # Check Deployment Version
             cd ${{ env.name }}_bak
-            DEPLOYMENT_COMMIT=$GITHUB_SHA
+            DEPLOYMENT_COMMIT=${{ github.event.pull_request.head.sha }}
             git stash 
             git fetch --all
             git checkout $DEPLOYMENT_COMMIT
