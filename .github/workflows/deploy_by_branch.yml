@@ -46,7 +46,7 @@ jobs:
 
             DEPLOYMENT_COMMIT=${{ github.head_ref || github.ref_name }} 
             echo "github.ref : $DEPLOYMENT_COMMIT"
-            checkout(){
+            checkout{
               git stash 
               git fetch --all
               git fetch --tags --force
@@ -54,16 +54,16 @@ jobs:
               git checkout $DEPLOYMENT_COMMIT
               git pull origin HEAD
             }
-            deploy(){
+            deploy{
               echo "${{ secrets.ENV_FILE }}" > .env
-              checkout()
+              checkout
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
             }
 
             # Check Deployment Version
             cd ${{ env.name }}_bak
             DEPLOYMENT_VERSION=$(git describe --tags --abbrev=0 $DEPLOYMENT_COMMIT || echo 0)
-            checkout()
+            checkout
             cd ..
             echo "DEPLOYMENT_COMMIT: $DEPLOYMENT_COMMIT"
             echo "DEPLOYMENT_VERSION: $DEPLOYMENT_VERSION"
@@ -87,20 +87,20 @@ jobs:
               echo "Upgrade Version Started"
               echo "Migrate from $RUNNING_VERSION to $DEPLOYMENT_VERSION"
               cd ${{ env.name }}
-              deploy()
+              deploy
               sh .github/migrate_from_running_version.sh $RUNNING_VERSION
               cd ..
             else 
               echo "Downgrade Version Started"
               echo "Test Deployment Before Rollback"
               cd ${{ env.name }}_bak
-              deploy()
+              deploy
               cd ..
 
               echo "Rollback from $RUNNING_VERSION to $DEPLOYMENT_VERSION"
               cd ${{ env.name }}
               sh .github/rollback_to_deployment_version.sh $DEPLOYMENT_VERSION
-              deploy()
+              deploy
               cd ..
             fi
 
