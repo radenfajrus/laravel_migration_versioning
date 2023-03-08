@@ -29,9 +29,8 @@ jobs:
               cd ${{ env.name }} 
               git stash 
               git fetch --all 
-              git checkout ${{ env.branch }} 
               git pull origin ${{ env.branch }}
-              git checkout ${{ github.head_ref || github.ref_name }} 
+              git checkout ${{ env.branch }} 
               cd .. 
             )
             # Clone Directory backup
@@ -40,22 +39,31 @@ jobs:
               cd ${{ env.name }}_bak 
               git stash 
               git fetch --all 
-              git checkout ${{ env.branch }} 
               git pull origin ${{ env.branch }}
-              git checkout ${{ github.head_ref || github.ref_name }} 
+              git checkout ${{ env.branch }} 
               cd .. 
             )
 
-            # Check Deployment Version
-            cd ${{ env.name }}_bak
             DEPLOYMENT_COMMIT=${{ github.head_ref || github.ref_name }} 
             echo "github.ref : $DEPLOYMENT_COMMIT"
-            git stash 
-            git fetch --all
-            git checkout ${{ env.branch }} 
-            git pull origin ${{ env.branch }}
-            git checkout $DEPLOYMENT_COMMIT
-            DEPLOYMENT_VERSION=$(git describe --tags --abbrev=0 || echo 0)
+            checkout(){
+              git stash 
+              git fetch --all
+              git fetch --tags --force
+              git pull origin ${{ env.branch }}
+              git checkout $DEPLOYMENT_COMMIT
+              git pull origin HEAD
+            }
+            deploy(){
+              echo "${{ secrets.ENV_FILE }}" > .env
+              checkout()
+              sh .github/deploy.sh $DEPLOYMENT_COMMIT
+            }
+
+            # Check Deployment Version
+            cd ${{ env.name }}_bak
+            DEPLOYMENT_VERSION=$(git describe --tags --abbrev=0 $DEPLOYMENT_COMMIT || echo 0)
+            checkout()
             cd ..
             echo "DEPLOYMENT_COMMIT: $DEPLOYMENT_COMMIT"
             echo "DEPLOYMENT_VERSION: $DEPLOYMENT_VERSION"
@@ -63,7 +71,7 @@ jobs:
             # Check Running Version
             cd ${{ env.name }}
             RUNNING_COMMIT=$(git rev-parse --verify HEAD)
-            RUNNING_VERSION=$(git describe --tags --abbrev=0 || echo 0)
+            RUNNING_VERSION=$(git describe --tags --abbrev=0 $RUNNING_COMMIT || echo 0)
             cd ..
             echo "RUNNING_COMMIT: $RUNNING_COMMIT"
             echo "RUNNING_VERSION: $RUNNING_VERSION"
@@ -79,23 +87,20 @@ jobs:
               echo "Upgrade Version Started"
               echo "Migrate from $RUNNING_VERSION to $DEPLOYMENT_VERSION"
               cd ${{ env.name }}
-              echo "${{ secrets.ENV_FILE }}" > .env
-              sh .github/deploy.sh $DEPLOYMENT_COMMIT
+              deploy()
               sh .github/migrate_from_running_version.sh $RUNNING_VERSION
               cd ..
             else 
               echo "Downgrade Version Started"
               echo "Test Deployment Before Rollback"
               cd ${{ env.name }}_bak
-              echo "${{ secrets.ENV_FILE }}" > .env
-              sh .github/deploy.sh $DEPLOYMENT_COMMIT
+              deploy()
               cd ..
 
               echo "Rollback from $RUNNING_VERSION to $DEPLOYMENT_VERSION"
               cd ${{ env.name }}
               sh .github/rollback_to_deployment_version.sh $DEPLOYMENT_VERSION
-              echo "${{ secrets.ENV_FILE }}" > .env
-              sh .github/deploy.sh $DEPLOYMENT_COMMIT
+              deploy()
               cd ..
             fi
 
