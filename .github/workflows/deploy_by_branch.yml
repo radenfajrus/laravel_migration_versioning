@@ -31,7 +31,7 @@ jobs:
               git fetch --all 
               git checkout ${{ env.branch }} 
               git pull origin ${{ env.branch }}
-              git checkout ${{ github.ref }}
+              git checkout ${{ github.head_ref || github.ref_name }} 
               cd .. 
             )
             # Clone Directory backup
@@ -42,13 +42,13 @@ jobs:
               git fetch --all 
               git checkout ${{ env.branch }} 
               git pull origin ${{ env.branch }}
-              git checkout ${{ github.ref }}
+              git checkout ${{ github.head_ref || github.ref_name }} 
               cd .. 
             )
 
             # Check Deployment Version
             cd ${{ env.name }}_bak
-            DEPLOYMENT_COMMIT=${{ github.ref }}
+            DEPLOYMENT_COMMIT=${{ github.head_ref || github.ref_name }} 
             echo "github.ref : $DEPLOYMENT_COMMIT"
             git stash 
             git fetch --all
@@ -57,13 +57,17 @@ jobs:
             git checkout $DEPLOYMENT_COMMIT
             DEPLOYMENT_VERSION=$(git describe --tags --abbrev=0 || echo 0)
             cd ..
-            echo $DEPLOYMENT_COMMIT
+            echo "DEPLOYMENT_COMMIT: $DEPLOYMENT_COMMIT"
+            echo "DEPLOYMENT_VERSION: $DEPLOYMENT_VERSION"
 
             # Check Running Version
             cd ${{ env.name }}
             RUNNING_COMMIT=$(git rev-parse --verify HEAD)
             RUNNING_VERSION=$(git describe --tags --abbrev=0 || echo 0)
             cd ..
+            echo "RUNNING_COMMIT: $RUNNING_COMMIT"
+            echo "RUNNING_VERSION: $RUNNING_VERSION"
+
 
             echo $RUNNING_VERSION > temp-version
             echo $DEPLOYMENT_VERSION >> temp-version
