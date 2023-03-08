@@ -47,7 +47,7 @@ jobs:
 
             # Clone if Directory not Exist
             [ -d ${{ env.name }} ] || ( 
-              echo("Clone Directory")
+              echo "Clone Directory" 
               git clone git@github.com:radenfajrus/${{ env.name }}.git 
               cd ${{ env.name }} 
               checkout
@@ -55,7 +55,7 @@ jobs:
             )
             # Clone Directory backup
             [ -d ${{ env.name }}_bak ] || ( 
-              echo("Clone Directory backup")
+              echo "Clone Directory backup" 
               git clone git@github.com:radenfajrus/${{ env.name }}.git ${{ env.name }}_bak 
               cd ${{ env.name }}_bak 
               checkout
@@ -63,7 +63,7 @@ jobs:
             )
 
 
-            echo("Check Deployment Version")
+            echo "Check Deployment Version" 
             cd ${{ env.name }}_bak
             checkout
             DEPLOYMENT_COMMIT=$(git rev-parse --verify HEAD)
@@ -72,7 +72,7 @@ jobs:
             echo "DEPLOYMENT_COMMIT: $DEPLOYMENT_COMMIT"
             echo "DEPLOYMENT_VERSION: $DEPLOYMENT_VERSION"
 
-            echo("Check Running Version")
+            echo "Check Running Version" 
             cd ${{ env.name }}
             RUNNING_COMMIT=$(git rev-parse --verify HEAD)
             RUNNING_VERSION=$(git describe --tags --abbrev=0 $RUNNING_COMMIT || echo 0)
