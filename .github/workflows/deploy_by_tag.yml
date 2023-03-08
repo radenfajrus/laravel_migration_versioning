@@ -29,7 +29,7 @@ jobs:
               cd ${{ env.name }} 
               git stash 
               git fetch --all 
-              git checkout ${{ env.branch }} 
+              git checkout ${{ github.ref }}
               git pull 
               cd .. 
             )
@@ -39,18 +39,19 @@ jobs:
               cd ${{ env.name }}_bak 
               git stash 
               git fetch --all 
-              git checkout ${{ env.branch }} 
+              git checkout ${{ github.ref }}
               git pull 
               cd .. 
             )
 
             # Check Deployment Version
             cd ${{ env.name }}_bak
-            DEPLOYMENT_COMMIT=$GITHUB_SHA
+            DEPLOYMENT_COMMIT=${{ github.ref }}
             git stash 
             git fetch --all
+            git checkout ${{ env.branch }} 
+            git pull origin ${{ env.branch }}
             git checkout $DEPLOYMENT_COMMIT
-            git pull
             DEPLOYMENT_VERSION=$(git describe --tags --abbrev=0 || echo 0)
             cd ..
             echo $DEPLOYMENT_COMMIT
@@ -73,7 +74,7 @@ jobs:
               cd ${{ env.name }}
               echo "${{ secrets.ENV_FILE }}" > .env
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
-              sh .github/migrate_from_current_version.sh $RUNNING_VERSION
+              sh .github/migrate_from_running_version.sh $RUNNING_VERSION
               cd ..
             else 
               echo "Downgrade Version Started"
