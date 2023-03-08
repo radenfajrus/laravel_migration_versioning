@@ -46,7 +46,7 @@ jobs:
 
             DEPLOYMENT_COMMIT=${{ github.head_ref || github.ref_name }} 
             echo "github.ref : $DEPLOYMENT_COMMIT"
-            checkout{
+            checkout(){
               git stash 
               git fetch --all
               git fetch --tags --force
@@ -54,7 +54,7 @@ jobs:
               git checkout $DEPLOYMENT_COMMIT
               git pull origin HEAD
             }
-            deploy{
+            deploy(){
               echo "${{ secrets.ENV_FILE }}" > .env
               checkout
               sh .github/deploy.sh $DEPLOYMENT_COMMIT
