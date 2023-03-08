@@ -1,7 +1,5 @@
 #!/bin/bash
 
-DEPLOYMENT_COMMIT=`[ -z $1 ] && echo 'prod' || echo $1`
-
 set -e
 echo "Deployment started ..."
 

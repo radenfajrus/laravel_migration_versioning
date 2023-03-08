@@ -42,7 +42,7 @@ jobs:
               echo "DEPLOY"
               echo "${{ secrets.ENV_FILE }}" > .env
               checkout
-              sh .github/deploy.sh $DEPLOYMENT_COMMIT
+              sh .github/deploy.sh
             }
 
             # Clone if Directory not Exist
