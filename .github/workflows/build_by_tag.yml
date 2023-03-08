@@ -1,0 +1,19 @@
+
+name: deploy_by_tag
+env:
+  name: laravel_migration_versioning
+  branch: prod
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Phase 
+        uses: actions/checkout@v2
+
+

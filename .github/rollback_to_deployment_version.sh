@@ -2,7 +2,7 @@
 
 DEPLOYMENT_VERSION=$1
 
-isHigher(){
+isHigherThan(){
   echo $1 > temp-version-rollback
   echo $2 >> temp-version-rollback
 
@@ -13,7 +13,8 @@ isHigher(){
 
 
 for d in `ls -d database/migrations/*/ | sed -e 's/database\/migrations//g' | sed -e 's/\///g' | sort -rV`; do
-  if (isHigher $d $DEPLOYMENT_VERSION); then
+  if (isHigherThan $d $DEPLOYMENT_VERSION); then
+    echo "php artisan migrate:rollback --force --path=database/migrations/$d"
      php artisan migrate:rollback --force --path=database/migrations/$d
   fi
 done
